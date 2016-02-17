@@ -1,16 +1,38 @@
 var express = require('express');
 var router = express.Router();
-
+var fs = require('fs');
+var path = require('path');
+var moment = require('moment');
 var _ = require('lodash');
+var http = require('http');
+var unzip = require('unzip');
 
-var setData = require('./AllSets-x')
-
-var sets  = _.values(setData).map(function(set){
-  return _.omit(set, 'cards');
-});
-
-var cardData = require('./AllCards-x')
-
+var setData = {}, cardData = {}, sets = [];
+console.log('Downloading AllCards-x.json.zip');
+http.get('http://mtgjson.com/json/AllCards-x.json.zip', (res)=>{
+  var file = unzip.Extract({path: path.join(__dirname,'data') });
+  res.pipe(file);
+  console.log('Unziping AllCards-x.json.zip');
+  file.on('close', ()=>{
+    console.log('Loading AllCards-x.json');
+    cardData = require('./Data/AllCards-x');
+    console.log('Loaded AllCards-x.json');
+  })
+})
+console.log('Downloading AllSets-x.json.zip');
+http.get('http://mtgjson.com/json/AllSets-x.json.zip', (res)=>{
+  var file = unzip.Extract({path: path.join(__dirname,'data') });
+  res.pipe(file);
+  console.log('Unziping AllSets-x.json.zip');
+  file.on('close', ()=>{
+    console.log('Loading AllSets-x.json');
+    setData = require('./Data/AllSets-x');
+    sets  = _.values(setData).map(function(set){
+      return _.omit(set, 'cards');
+    });
+    console.log('Loaded AllSets-x.json');
+  })
+})
 
 router.get('/', function(req, res) {
   res.json({ message: 'hooray! welcome to our api!' });

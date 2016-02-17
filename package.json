@@ -43,6 +43,8 @@
   },
   "dependencies": {
     "express": "^4.13.4",
-    "lodash": "^4.1.0"
+    "lodash": "^4.1.0",
+    "moment": "^2.11.2",
+    "unzip": "^0.1.11"
   }
 }
